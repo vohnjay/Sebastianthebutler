@@ -6,8 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		F5744B642F56A7250032AF8C /* FoundationModels.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5744B632F56A7250032AF8C /* FoundationModels.framework */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		F56892BB2F5658C1002EA114 /* Sebastianthebutler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sebastianthebutler.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F5744B632F56A7250032AF8C /* FoundationModels.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FoundationModels.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.2.sdk/System/Library/Frameworks/FoundationModels.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -36,6 +41,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F5744B642F56A7250032AF8C /* FoundationModels.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -46,6 +52,7 @@
 			isa = PBXGroup;
 			children = (
 				F56892BD2F5658C1002EA114 /* Sebastianthebutler */,
+				F5744B622F56A7250032AF8C /* Frameworks */,
 				F56892BC2F5658C1002EA114 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -56,6 +63,14 @@
 				F56892BB2F5658C1002EA114 /* Sebastianthebutler.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		F5744B622F56A7250032AF8C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F5744B632F56A7250032AF8C /* FoundationModels.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
