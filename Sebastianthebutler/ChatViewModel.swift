@@ -58,9 +58,13 @@ final class ChatViewModel {
 
     private let service = LLMService.shared
 
-    // MARK: - Actions
+    // MARK: - Send Message
 
-    func sendMessage(messages: [Message], modelContext: ModelContext) async {
+    func sendMessage(
+        messages: [Message],
+        conversation: Conversation,
+        modelContext: ModelContext
+    ) async {
         let text = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty, !selectedModel.isEmpty else { return }
 
@@ -68,26 +72,37 @@ final class ChatViewModel {
         isLoading = true
         errorMessage = nil
 
+        // Auto-title the conversation from the first user message
+        if messages.isEmpty {
+            conversation.autoTitle(from: text)
+        }
+
         let userMessage = Message(role: .user, content: text)
+        userMessage.conversation = conversation
         modelContext.insert(userMessage)
 
         // Build context window: system prompt + last 20 turns + new user message
         var apiMessages: [OllamaMessage] = [
             OllamaMessage(role: "system", content: Self.systemPrompt)
         ]
-        let history = messages.sorted(by: { $0.timestamp < $1.timestamp }).suffix(20)
+        let history = messages.suffix(20)
         apiMessages += history.map { OllamaMessage(role: $0.role, content: $0.content) }
         apiMessages.append(OllamaMessage(role: "user", content: text))
 
         streamingResponse = ""
 
         do {
-            let stream = service.streamChat(messages: apiMessages, model: selectedModel, serverURL: serverURL)
+            let stream = service.streamChat(
+                messages: apiMessages,
+                model: selectedModel,
+                serverURL: serverURL
+            )
             for try await chunk in stream {
                 streamingResponse += chunk
             }
             if !streamingResponse.isEmpty {
                 let assistantMessage = Message(role: .assistant, content: streamingResponse)
+                assistantMessage.conversation = conversation
                 modelContext.insert(assistantMessage)
             }
             streamingResponse = ""
@@ -97,6 +112,8 @@ final class ChatViewModel {
 
         isLoading = false
     }
+
+    // MARK: - Fetch Models
 
     func fetchModels() async {
         isFetchingModels = true

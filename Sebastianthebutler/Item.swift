@@ -19,6 +19,7 @@ final class Message {
     var role: String
     var content: String
     var timestamp: Date
+    var conversation: Conversation?
 
     init(role: MessageRole, content: String) {
         self.id = UUID()
