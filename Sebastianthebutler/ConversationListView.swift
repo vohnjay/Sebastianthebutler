@@ -12,15 +12,49 @@ struct ConversationListView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Conversation.createdAt, order: .reverse) private var conversations: [Conversation]
 
-    @Binding var selectedConversation: Conversation?
+    @Binding var selection: AppDestination?
 
     var body: some View {
-        List(selection: $selectedConversation) {
-            ForEach(conversations) { conversation in
-                ConversationRow(conversation: conversation)
-                    .tag(conversation)
+        List(selection: $selection) {
+            // ── Daily Briefing row ──────────────────────────────────
+            Section {
+                HStack(spacing: 14) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color(red:1,green:0.85,blue:0.4),
+                                             Color(red:1,green:0.65,blue:0.3)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing)
+                            )
+                            .frame(width: 36, height: 36)
+                        Image(systemName: "sun.horizon.fill")
+                            .font(.system(size: 17, weight: .semibold))
+                            .foregroundStyle(.white)
+                    }
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Daily Briefing")
+                            .font(.headline)
+                        Text("Weather · Events · Reminders")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .padding(.vertical, 2)
+                .tag(AppDestination.dailyBriefing)
             }
-            .onDelete(perform: deleteConversations)
+
+            // ── Conversations ───────────────────────────────────────
+            Section {
+                ForEach(conversations) { conversation in
+                    ConversationRow(conversation: conversation)
+                        .tag(AppDestination.conversation(conversation))
+                }
+                .onDelete(perform: deleteConversations)
+            } header: {
+                Text("Conversations")
+            }
         }
         .navigationTitle("Sebastian")
         .toolbar {
@@ -32,42 +66,41 @@ struct ConversationListView: View {
         }
         .overlay {
             if conversations.isEmpty {
-                emptyState
+                emptyConversationsHint
             }
         }
     }
 
-    // MARK: - Empty state
+    // MARK: – Empty hint
 
-    private var emptyState: some View {
-        VStack(spacing: 12) {
+    private var emptyConversationsHint: some View {
+        VStack(spacing: 10) {
+            Spacer()
             Image(systemName: "bubble.left.and.bubble.right")
-                .font(.system(size: 44))
+                .font(.system(size: 36))
                 .foregroundStyle(.secondary)
             Text("No conversations yet")
-                .font(.headline)
-            Text("Tap the pencil icon to start a new one.")
-                .font(.subheadline)
+                .font(.subheadline.weight(.medium))
+            Text("Tap ✏️ to start chatting with Sebastian.")
+                .font(.caption)
                 .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
+            Spacer()
         }
         .padding()
     }
 
-    // MARK: - Actions
+    // MARK: – Actions
 
     private func newConversation() {
         let c = Conversation()
         modelContext.insert(c)
-        selectedConversation = c
+        selection = .conversation(c)
     }
 
     private func deleteConversations(at offsets: IndexSet) {
         for i in offsets {
             let c = conversations[i]
-            if selectedConversation?.id == c.id {
-                selectedConversation = nil
-            }
+            if selection == .conversation(c) { selection = nil }
             modelContext.delete(c)
         }
     }
@@ -81,9 +114,9 @@ struct ConversationRow: View {
     private var subtitle: String {
         conversation.messages
             .sorted { $0.timestamp > $1.timestamp }
-            .first?.content
-            .prefix(60)
-            .description ?? "No messages yet"
+            .first
+            .map { String($0.content.prefix(60)) }
+            ?? "No messages yet"
     }
 
     var body: some View {

@@ -10,10 +10,27 @@ import SwiftUI
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @Bindable var viewModel: ChatViewModel
+    @AppStorage("userName") private var userName = ""
 
     var body: some View {
         NavigationStack {
             Form {
+                // MARK: Personal Section
+                Section {
+                    HStack {
+                        Label("Your Name", systemImage: "person.fill")
+                        Spacer()
+                        TextField("e.g. Alex", text: $userName)
+                            .multilineTextAlignment(.trailing)
+                            .foregroundStyle(.secondary)
+                            .autocorrectionDisabled()
+                    }
+                } header: {
+                    Text("Personal")
+                } footer: {
+                    Text("Sebastian uses your name in the Daily Briefing and greetings.")
+                }
+
                 // MARK: Server Section
                 Section {
                     HStack {

@@ -6,5 +6,11 @@
 	<array>
 		<string>remote-notification</string>
 	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Sebastian uses your location to fetch the local weather for your Daily Briefing.</string>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>Sebastian reads your calendar events to include them in your Daily Briefing.</string>
+	<key>NSRemindersFullAccessUsageDescription</key>
+	<string>Sebastian reads your reminders to keep you on top of what needs doing today.</string>
 </dict>
 </plist>
